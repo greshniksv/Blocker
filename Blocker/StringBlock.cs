@@ -1,53 +1,42 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Blocker.Exceptions;
 
 namespace Blocker
 {
     public class StringBlock : Block
     {
-        private Configuration configuration;
         public StringBlock(Configuration configuration) : base(configuration)
         {
-            this.configuration = configuration;
         }
 
-        public void SetKey(string key)
-        {
-            var byteKey = Encoding.UTF8.GetBytes(key);
-            if (byteKey.Length > configuration.KeySize)
+        public new string Key {
+            get { return Encoding.UTF8.GetString(base.Key); }
+            set
             {
-                throw new IncorrectKeyException("Key is too big");
+                var byteKey = Encoding.UTF8.GetBytes(value);
+                if (byteKey.Length > configuration.KeySize)
+                {
+                    throw new IncorrectKeyException("Key is too big");
+                }
+                byteKey.CopyTo(base.Key, 0);
+                Array.Clear(base.Key, byteKey.Length, base.Key.Length - byteKey.Length);
             }
-            byteKey.CopyTo(Key, 0);
         }
 
-        public void Set(string key, string data)
+        public new string Data
         {
-            var byteKey = Encoding.UTF8.GetBytes(key);
-            var byteData = Encoding.UTF8.GetBytes(data);
-
-            if (byteKey.Length > configuration.KeySize)
+            get { return Encoding.UTF8.GetString(base.Data); }
+            set
             {
-                throw new IncorrectKeyException("Key is too big");
+                var byteData = Encoding.UTF8.GetBytes(value);
+                if (byteData.Length > configuration.DataSize)
+                {
+                    throw new IncorrectKeyException("Data is too big");
+                }
+                byteData.CopyTo(base.Data, 0);
+                Array.Clear(base.Data, byteData.Length, base.Data.Length - byteData.Length);
             }
-
-            if (byteData.Length > configuration.DataSize)
-            {
-                throw new IncorrectKeyException("Data is too big");
-            }
-
-            byteKey.CopyTo(Key, 0);
-            byteData.CopyTo(Data, 0);
-        }
-
-        public string GetKey()
-        {
-            return Encoding.UTF8.GetString(Key);
-        }
-
-        public string GetData()
-        {
-            return Encoding.UTF8.GetString(Data);
         }
     }
 }

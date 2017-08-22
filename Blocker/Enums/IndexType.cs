@@ -11,13 +11,15 @@ namespace Blocker.Enums
     /// </summary>
     public enum IndexType
     {
+        None,
+
         /// <summary>
-        /// User should add pre-sorted items by key.
+        /// Sorting use internal sorting method.
         /// </summary>
         Internal,
 
         /// <summary>
-        /// Index will create by program.
+        /// Sorting use external method.
         /// </summary>
         External
     }
