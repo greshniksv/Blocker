@@ -2,27 +2,30 @@
 
 namespace Blocker
 {
-    public abstract class Block
+    public class Block : BaseBlock
     {
-        internal Configuration configuration;
-        public byte[] Key { get; set; }
-        public byte[] Data { get; set; }
+        internal readonly Configuration Configuration;
 
         internal Block(Configuration configuration)
         {
+            if (configuration == null)
+            {
+                return;
+            }
+
             Key = new byte[configuration.KeySize];
             Data = new byte[configuration.DataSize];
-            this.configuration = configuration;
+            this.Configuration = configuration;
         }
 
-        public void Validate(Configuration config)
+        public void Validate()
         {
-            if (Key.Length != config.KeySize)
+            if (Key.Length != Configuration.KeySize)
             {
                 throw new IncorrectKeyException("Incorrect size");
             }
 
-            if (Data.Length == config.DataSize)
+            if (Data.Length != Configuration.DataSize)
             {
                 throw new IncorrectDataException("Incorrect size");
             }

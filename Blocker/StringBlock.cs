@@ -10,12 +10,17 @@ namespace Blocker
         {
         }
 
+        public StringBlock(Configuration configuration, string key): base(configuration)
+        {
+            Key = key;
+        }
+        
         public new string Key {
             get { return Encoding.UTF8.GetString(base.Key); }
             set
             {
                 var byteKey = Encoding.UTF8.GetBytes(value);
-                if (byteKey.Length > configuration.KeySize)
+                if (byteKey.Length > Configuration.KeySize)
                 {
                     throw new IncorrectKeyException("Key is too big");
                 }
@@ -30,7 +35,7 @@ namespace Blocker
             set
             {
                 var byteData = Encoding.UTF8.GetBytes(value);
-                if (byteData.Length > configuration.DataSize)
+                if (byteData.Length > Configuration.DataSize)
                 {
                     throw new IncorrectKeyException("Data is too big");
                 }

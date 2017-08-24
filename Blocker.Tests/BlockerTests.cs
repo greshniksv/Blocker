@@ -1,4 +1,5 @@
-﻿using Blocker.Enums;
+﻿using System;
+using Blocker.Enums;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Blocker.Tests
@@ -9,26 +10,25 @@ namespace Blocker.Tests
         [TestMethod]
         public void TestMethod1()
         {
-            var blocker = new Blocker<StringBlock>(new Configuration
+            var conf = new Configuration
             {
                 BlockCount = 10,
                 KeySize = 5,
                 DataSize = 10,
-                IndexType = IndexType.Internal
-            });
+                IndexType = IndexType.None
+            };
+            var blocker = new Blocker<StringBlock>(conf);
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < blocker.Length; i++)
             {
-                var block = blocker.CreateBlockInstance();
-                block.Key = i.ToString();
-                block.Data = $"data{i}";
-                blocker.Add(block);
+                blocker[i] = new StringBlock(conf)
+                {
+                    Key = $"{i}",
+                    Data = $"data{i}"
+                };
             }
 
-            var findBlock = blocker.CreateBlockInstance();
-            findBlock.Key = "5";
-            blocker.Find(findBlock);
-
+            var findBlock = blocker.Find(new StringBlock(conf, "5"));
             Assert.AreEqual(findBlock.Data, "data5");
         }
     }

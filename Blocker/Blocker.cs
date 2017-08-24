@@ -1,56 +1,69 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Blocker.Enums;
 
 namespace Blocker
 {
-    public class Blocker<T> where T:Block 
+    public class Blocker<T> : IEnumerable<T> where T:Block
     {
-        private byte[] _data;
+        private readonly BlockIndexator _indexator;
         private readonly Configuration _configuration;
 
         public Blocker(Configuration configuration)
         {
             this._configuration = configuration;
-            var dataSize = configuration.BlockCount * (configuration.KeySize + configuration.DataSize);
-            _data = new byte[dataSize];
+            _indexator = new BlockIndexator(configuration);
         }
 
-        public void Add(IEnumerable<T> blocks)
+        public long Length => _configuration.BlockCount;
+
+        public T this[int index]
         {
-            foreach (var block in blocks)
+            get
             {
-                Add(block);
+                var i = (T)Activator.CreateInstance(typeof(T), _configuration);
+                i.Parce(_indexator[index]);
+                return i;
+            }
+            set { _indexator[index] = value; }
+        }
+
+        public T Find(T block)
+        {
+            if (_configuration.IndexType == IndexType.None)
+            {
+                for (int i = 0; i < _indexator.Length; i++)
+                {
+                    if (_indexator[i].Key.SequenceEqual(block.Key))
+                    {
+                        var instance = (T)Activator.CreateInstance(typeof(T), _configuration);
+                        instance.Parce(_indexator[i]);
+                        return instance;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (int i = 0; i < _configuration.BlockCount; i++)
+            {
+                var instance = (T)Activator.CreateInstance(typeof(T), _configuration);
+                instance.Parce(_indexator[i]);
+                yield return instance;
             }
         }
 
-        public void Add(T block)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            block.Validate(_configuration);
-
+            return GetEnumerator();
         }
 
-        public void Change(T block)
-        {
-            block.Validate(_configuration);
-
-        }
-
-        public void Remove(T block)
-        {
-            block.Validate(_configuration);
-
-        }
-
-        public void Find(T block)
-        {
-            block.Validate(_configuration);
-
-        }
-
-        public T CreateBlockInstance()
+        public T GetEmptyBlock()
         {
             return (T)Activator.CreateInstance(typeof(T), _configuration);
         }

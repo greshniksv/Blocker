@@ -40,13 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseBlock.cs" />
     <Compile Include="Block.cs" />
     <Compile Include="Blocker.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="BlockIndexator.cs" />
     <Compile Include="Enums\IndexType.cs" />
     <Compile Include="Exceptions\BlockStructException.cs" />
     <Compile Include="Exceptions\IncorrectDataException.cs" />
     <Compile Include="Exceptions\IncorrectKeyException.cs" />
+    <Compile Include="Interfaces\IBlock.cs" />
+    <Compile Include="Interfaces\IIndexator.cs" />
     <Compile Include="Interfaces\ISort.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sorting\BubbleSort.cs" />
